@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GIMP Cheat Sheet — Keybinds &amp; Functions</title>
+<style>
+  :root{
+    --ink:#17181b;
+    --panel:#1e2024;
+    --panel-2:#262930;
+    --line:#34383f;
+    --line-soft:#2a2d33;
+    --text:#eae7e0;
+    --text-dim:#9a9ea8;
+    --text-faint:#666b75;
+    --brass:#c98a3e;
+    --brass-dark:#8a5f2e;
+    --brass-ink:#2a1c0c;
+    --teal:#4fa8a0;
+    --serif: Georgia, 'Iowan Old Style', 'Palatino Linotype', ui-serif, 'Times New Roman', serif;
+    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, Roboto, Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *{animation:none !important; transition:none !important;}
+  }
+  body{
+    margin:0;
+    background:
+      radial-gradient(1200px 600px at 85% -10%, #23262d 0%, transparent 60%),
+      var(--ink);
+    color:var(--text);
+    font-family:var(--sans);
+    line-height:1.45;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--brass); color:var(--brass-ink);}
+  a{color:inherit;}
+  ::-webkit-scrollbar{width:10px; height:10px;}
+  ::-webkit-scrollbar-track{background:var(--ink);}
+  ::-webkit-scrollbar-thumb{background:#33373e; border-radius:6px;}
+  ::-webkit-scrollbar-thumb:hover{background:#3f434c;}
+
+  :focus-visible{outline:2px solid var(--brass); outline-offset:2px; border-radius:4px;}
+
+  /* ---------- Header ---------- */
+  header{
+    position:sticky; top:0; z-index:50;
+    background:rgba(23,24,27,.92);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+    padding:1rem 1.5rem;
+  }
+  .header-inner{
+    max-width:1200px; margin:0 auto;
+    display:flex; align-items:center; gap:1.25rem; flex-wrap:wrap;
+  }
+  .brand{display:flex; flex-direction:column; gap:.1rem; margin-right:auto;}
+  .brand .eyebrow{
+    font-family:var(--mono); font-size:.68rem; letter-spacing:.18em; text-transform:uppercase;
+    color:var(--brass);
+  }
+  .brand h1{
+    margin:0; font-family:var(--serif); font-style:italic; font-weight:700;
+    font-size:1.5rem; letter-spacing:.01em; color:var(--text);
+  }
+  .os-toggle{
+    display:flex; background:var(--panel); border:1px solid var(--line); border-radius:999px;
+    padding:3px; font-family:var(--mono); font-size:.75rem;
+  }
+  .os-toggle button{
+    appearance:none; border:0; background:transparent; color:var(--text-dim);
+    padding:.4rem .85rem; border-radius:999px; cursor:pointer; font-family:inherit; font-size:inherit;
+  }
+  .os-toggle button.active{background:var(--brass); color:var(--brass-ink); font-weight:700;}
+
+  .search-wrap{position:relative; flex:1 1 260px; max-width:420px;}
+  .search-wrap input{
+    width:100%; background:var(--panel); border:1px solid var(--line); color:var(--text);
+    padding:.65rem .8rem .65rem 2.2rem; border-radius:10px; font-size:.92rem; font-family:var(--sans);
+  }
+  .search-wrap input::placeholder{color:var(--text-faint);}
+  .search-wrap svg{position:absolute; left:.7rem; top:50%; transform:translateY(-50%); width:16px; height:16px; color:var(--text-faint);}
+  .search-hint{
+    position:absolute; right:.55rem; top:50%; transform:translateY(-50%);
+    font-family:var(--mono); font-size:.68rem; color:var(--text-faint);
+    border:1px solid var(--line); border-radius:5px; padding:.1rem .35rem; pointer-events:none;
+  }
+  #resultCount{font-family:var(--mono); font-size:.72rem; color:var(--text-dim); white-space:nowrap;}
+
+  /* ---------- Layout ---------- */
+  .layout{
+    max-width:1200px; margin:0 auto; padding:1.75rem 1.5rem 4rem;
+    display:grid; grid-template-columns:220px 1fr; gap:2rem;
+    align-items:start;
+  }
+  nav.sidebar{
+    position:sticky; top:5.6rem; align-self:start;
+    display:flex; flex-direction:column; gap:.15rem;
+    max-height:calc(100vh - 7rem); overflow-y:auto; padding-right:.25rem;
+  }
+  nav.sidebar a{
+    display:flex; justify-content:space-between; gap:.5rem;
+    text-decoration:none; color:var(--text-dim); font-size:.85rem;
+    padding:.4rem .6rem; border-left:2px solid transparent; border-radius:0 6px 6px 0;
+  }
+  nav.sidebar a .n{font-family:var(--mono); font-size:.68rem; color:var(--text-faint);}
+  nav.sidebar a:hover{color:var(--text); background:var(--panel-2);}
+  nav.sidebar a.active{color:var(--brass); border-left-color:var(--brass); background:var(--panel-2); font-weight:600;}
+
+  main{min-width:0;}
+
+  /* ---------- Callout ---------- */
+  .callout{
+    background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--brass);
+    border-radius:10px; padding:1rem 1.2rem; margin-bottom:2rem;
+  }
+  .callout h2{
+    margin:0 0 .6rem; font-family:var(--serif); font-style:italic; font-size:1.05rem; color:var(--brass);
+  }
+  .callout ul{margin:0; padding-left:1.1rem; display:flex; flex-direction:column; gap:.45rem;}
+  .callout li{color:var(--text-dim); font-size:.87rem;}
+  .callout li b{color:var(--text); font-weight:600;}
+
+  /* ---------- Category cards ---------- */
+  .cat-card{
+    background:var(--panel); border:1px solid var(--line); border-radius:12px;
+    overflow:hidden; margin-bottom:1.75rem; scroll-margin-top:5.5rem;
+  }
+  .cat-card.accent{border-color:var(--brass-dark);}
+  .cat-head{
+    padding:.9rem 1.15rem; border-bottom:1px solid var(--line);
+    display:flex; align-items:baseline; justify-content:space-between; gap:1rem;
+    background:var(--panel-2);
+  }
+  .cat-head h2{
+    margin:0; font-family:var(--serif); font-style:italic; font-weight:700;
+    font-size:1.3rem; color:var(--text); letter-spacing:.01em;
+  }
+  .cat-card.accent .cat-head h2{color:var(--brass);}
+  .cat-count{font-family:var(--mono); font-size:.72rem; color:var(--text-faint); white-space:nowrap;}
+
+  .shortcut{
+    display:flex; justify-content:space-between; align-items:center; gap:1.25rem;
+    padding:.7rem 1.15rem; border-bottom:1px solid var(--line-soft);
+  }
+  .shortcut:last-child{border-bottom:none;}
+  .shortcut:hover{background:rgba(255,255,255,.015);}
+  .action{display:flex; flex-direction:column; gap:.2rem; min-width:0;}
+  .action .name{font-weight:600; font-size:.92rem;}
+  .action .note{font-size:.78rem; color:var(--text-dim); max-width:56ch;}
+  .action mark{background:var(--brass); color:var(--brass-ink); border-radius:3px; padding:0 .1em;}
+
+  .keys{display:flex; align-items:center; gap:.3rem; flex-shrink:0;}
+  .key{
+    display:inline-flex; align-items:center; justify-content:center; min-width:1.9em;
+    padding:.3rem .55rem; font-family:var(--mono); font-size:.78rem; font-weight:600;
+    color:var(--text); background:linear-gradient(180deg,#34383f,#24262b);
+    border-radius:6px; border:1px solid #3d424a;
+    box-shadow:0 2px 0 #101215, inset 0 1px 0 rgba(255,255,255,.06);
+  }
+  .key.mod{
+    color:var(--brass-ink); background:linear-gradient(180deg,var(--brass),#a86f2f);
+    border-color:var(--brass-dark);
+    box-shadow:0 2px 0 #6b4a22, inset 0 1px 0 rgba(255,255,255,.28);
+  }
+  .plus{color:var(--text-faint); font-size:.78rem; font-family:var(--mono);}
+  .suffix{color:var(--text-faint); font-size:.78rem; font-family:var(--mono); margin-left:.15rem;}
+  .no-default{
+    font-family:var(--mono); font-size:.7rem; color:var(--text-faint);
+    border:1px dashed var(--line); border-radius:6px; padding:.3rem .55rem;
+  }
+
+  /* ---------- Comparison table (GIMP vs Photoshop) ---------- */
+  table.cmp{width:100%; border-collapse:collapse; font-size:.86rem;}
+  table.cmp th{
+    text-align:left; font-family:var(--mono); font-size:.68rem; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--text-faint); padding:.6rem 1.15rem; border-bottom:1px solid var(--line); background:var(--panel-2);
+  }
+  table.cmp td{padding:.6rem 1.15rem; border-bottom:1px solid var(--line-soft); color:var(--text-dim);}
+  table.cmp tr:last-child td{border-bottom:none;}
+  table.cmp td.action-cell{color:var(--text); font-weight:600;}
+  table.cmp td mark{background:var(--brass); color:var(--brass-ink); border-radius:3px; padding:0 .1em;}
+
+  .empty-state{
+    text-align:center; padding:3rem 1rem; color:var(--text-dim); display:none;
+  }
+  .empty-state.show{display:block;}
+  .empty-state .big{font-family:var(--serif); font-style:italic; font-size:1.3rem; color:var(--text); margin-bottom:.4rem;}
+
+  footer{
+    max-width:1200px; margin:0 auto; padding:1rem 1.5rem 3rem; color:var(--text-faint); font-size:.78rem;
+  }
+  footer a{color:var(--brass); text-decoration:none;}
+  footer a:hover{text-decoration:underline;}
+
+  #toTop{
+    position:fixed; bottom:1.5rem; right:1.5rem; z-index:40;
+    width:2.6rem; height:2.6rem; border-radius:50%; border:1px solid var(--line);
+    background:var(--panel-2); color:var(--text); display:flex; align-items:center; justify-content:center;
+    cursor:pointer; opacity:0; pointer-events:none; box-shadow:0 4px 12px rgba(0,0,0,.4);
+  }
+  #toTop.show{opacity:1; pointer-events:auto;}
+
+  /* ---------- Mobile ---------- */
+  @media (max-width:860px){
+    .layout{grid-template-columns:1fr; padding-top:1rem;}
+    nav.sidebar{
+      position:sticky; top:4.6rem; flex-direction:row; overflow-x:auto; max-height:none;
+      background:var(--ink); padding:.6rem 0; border-bottom:1px solid var(--line); z-index:40;
+      gap:.4rem;
+    }
+    nav.sidebar a{border-left:none; border-bottom:2px solid transparent; white-space:nowrap; flex-shrink:0;}
+    nav.sidebar a.active{border-left-color:transparent; border-bottom-color:var(--brass);}
+    .header-inner{gap:.75rem;}
+    .brand h1{font-size:1.25rem;}
+    .search-wrap{order:3; max-width:none; flex-basis:100%;}
+  }
+
+  @media print{
+    header, nav.sidebar, #toTop, .search-hint{display:none !important;}
+    body{background:#fff; color:#111;}
+    .layout{grid-template-columns:1fr; padding:0;}
+    .cat-card{border:1px solid #ccc; break-inside:avoid;}
+    .cat-head{background:#f3f3f3;}
+    .key{background:#eee; color:#111; box-shadow:none; border-color:#ccc;}
+    .key.mod{background:#ddd; color:#111;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="brand">
+      <span class="eyebrow">Local Reference · GIMP 3.0 defaults</span>
+      <h1>GIMP Cheat Sheet</h1>
+    </div>
+    <div class="os-toggle" role="group" aria-label="Operating system">
+      <button type="button" id="btnWin" class="active">Windows / Linux</button>
+      <button type="button" id="btnMac">macOS</button>
+    </div>
+    <div class="search-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="search" placeholder="Search shortcuts, tools, menus…" autocomplete="off">
+      <span class="search-hint" id="searchHint">/</span>
+    </div>
+    <span id="resultCount"></span>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="sidebar" id="sidebar" aria-label="Categories"></nav>
+
+  <main>
+    <div class="callout">
+      <h2>Four things worth knowing before you scroll</h2>
+      <ul>
+        <li><b>Ctrl+D duplicates the whole image</b> — it does not deselect, unlike Photoshop. Deselect is <b>Shift+Ctrl+A</b>.</li>
+        <li><b>Ctrl+E re-exports</b> to your last-used file and format. It does not fit the image in the window — that's <b>Shift+Ctrl+J</b> — a mix-up common in older guides.</li>
+        <li><b>Ctrl+I inverts the selection</b>, not the image's colors. Colors → Invert has no default shortcut of its own.</li>
+        <li>Every binding below is a GIMP <b>default</b>. Your setup may differ if you've customized things — check <b>Edit → Keyboard Shortcuts</b> (<b>GIMP → Keyboard Shortcuts</b> on Mac) for your actual bindings, or to assign new ones (Ctrl+Alt+key is rarely already taken).</li>
+      </ul>
+    </div>
+
+    <div id="catContainer"></div>
+
+    <div class="empty-state" id="emptyState">
+      <div class="big">No matches</div>
+      <div>Try a different search, or press Esc to clear it.</div>
+    </div>
+  </main>
+</div>
+
+<button id="toTop" aria-label="Back to top">↑</button>
+
+<footer>
+  Built as a static, offline reference — open this file directly in any browser, no internet required. Shortcuts verified against GIMP 3.0 defaults; GIMP remains fully customizable via Edit → Keyboard Shortcuts, so treat this as a starting point, not gospel for your install.
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---------- Category metadata ----------
+  var CATS = [
+    {id:'essentials', label:'Quick Reference', accent:true},
+    {id:'file', label:'File'},
+    {id:'edit', label:'Edit'},
+    {id:'select', label:'Select'},
+    {id:'view', label:'View &amp; Navigate'},
+    {id:'imagelayer', label:'Image &amp; Layer'},
+    {id:'seltools', label:'Selection Tools'},
+    {id:'painttools', label:'Paint Tools'},
+    {id:'transformtools', label:'Transform Tools'},
+    {id:'othertools', label:'Other Tools'},
+    {id:'modifiers', label:'Canvas &amp; Selection Modifiers'},
+    {id:'colors', label:'Colors'},
+    {id:'filters', label:'Filters'},
+    {id:'text', label:'Text Tool'},
+    {id:'winhelp', label:'Windows &amp; Help'},
+    {id:'vsps', label:'GIMP vs Photoshop'}
+  ];
+
+  // keys: array of tokens, e.g. ['Ctrl','N']. Tokens 'Ctrl' and 'Alt' swap for macOS.
+  // suffix: plain text appended after the keycaps, e.g. '+ drag'
+  // noDefault: true => render a "no default" pill instead of keycaps
+  var E = [
+    // ---------------- Essentials ----------------
+    {cat:'essentials', name:'New Image', keys:['Ctrl','N']},
+    {cat:'essentials', name:'Save (.xcf)', keys:['Ctrl','S']},
+    {cat:'essentials', name:'Export As', keys:['Shift','Ctrl','E']},
+    {cat:'essentials', name:'Undo', keys:['Ctrl','Z']},
+    {cat:'essentials', name:'Select None (deselect)', keys:['Shift','Ctrl','A']},
+    {cat:'essentials', name:'Invert Selection', keys:['Ctrl','I']},
+    {cat:'essentials', name:'Duplicate Image', keys:['Ctrl','D']},
+    {cat:'essentials', name:'Merge Visible Layers', keys:['Ctrl','M']},
+    {cat:'essentials', name:'Crop tool', keys:['Shift','C']},
+    {cat:'essentials', name:'Toggle Fullscreen', keys:['F11']},
+
+    // ---------------- File ----------------
+    {cat:'file', name:'New Image', keys:['Ctrl','N'], note:'Opens the blank-canvas dialog.'},
+    {cat:'file', name:'New Image From Clipboard', keys:['Shift','Ctrl','V'], note:"Creates a new image from whatever's on the system clipboard."},
+    {cat:'file', name:'Open', keys:['Ctrl','O']},
+    {cat:'file', name:'Open as Layers', keys:['Ctrl','Alt','O'], note:'Adds the file as a new layer in the current image instead of a new window.'},
+    {cat:'file', name:'Save (.xcf)', keys:['Ctrl','S'], note:"Writes GIMP's native format, keeping all layers and history."},
+    {cat:'file', name:'Save As', keys:['Shift','Ctrl','S']},
+    {cat:'file', name:'Export (overwrite)', keys:['Ctrl','E'], note:'Re-exports to the last-used file and format — no dialog.'},
+    {cat:'file', name:'Export As', keys:['Shift','Ctrl','E'], note:'Choose a new format or location (PNG, JPEG, etc).'},
+    {cat:'file', name:'Print', keys:['Ctrl','P']},
+    {cat:'file', name:'Close Window', keys:['Ctrl','W']},
+    {cat:'file', name:'Close All', keys:['Shift','Ctrl','W']},
+    {cat:'file', name:'Quit', keys:['Ctrl','Q']},
+
+    // ---------------- Edit ----------------
+    {cat:'edit', name:'Undo', keys:['Ctrl','Z']},
+    {cat:'edit', name:'Redo', keys:['Ctrl','Y']},
+    {cat:'edit', name:'Cut', keys:['Ctrl','X']},
+    {cat:'edit', name:'Copy', keys:['Ctrl','C']},
+    {cat:'edit', name:'Copy Visible', keys:['Shift','Ctrl','C'], note:'Flattens all visible layers onto the clipboard without merging them in the image itself.'},
+    {cat:'edit', name:'Paste', keys:['Ctrl','V']},
+    {cat:'edit', name:'Paste In Place', keys:['Ctrl','Alt','V'], note:'Pastes at the original coordinates instead of centered in view.'},
+    {cat:'edit', name:'Paste as New Image', keys:['Shift','Ctrl','V']},
+    {cat:'edit', name:'Erase Selection', keys:['Delete']},
+    {cat:'edit', name:'Fill with FG Color', keys:['Ctrl',',']},
+    {cat:'edit', name:'Fill with BG Color', keys:['Ctrl','.']},
+    {cat:'edit', name:'Fill with Pattern', keys:['Ctrl',';']},
+    {cat:'edit', name:'Undo History', noDefault:true, note:'Edit → Undo History — browse and jump to any earlier state.'},
+    {cat:'edit', name:'Keyboard Shortcuts editor', noDefault:true, note:'Edit → Keyboard Shortcuts — view, search, and reassign every binding.'},
+
+    // ---------------- Select ----------------
+    {cat:'select', name:'Select All', keys:['Ctrl','A']},
+    {cat:'select', name:'Select None (deselect)', keys:['Shift','Ctrl','A'], note:'Clears the active selection. Does not drop a floating selection.'},
+    {cat:'select', name:'Invert Selection', keys:['Ctrl','I'], note:'Selects the opposite area — not the same as Colors → Invert.'},
+    {cat:'select', name:'Toggle Selection Outline', keys:['Ctrl','T'], note:"Hides/shows the marching ants without changing what's selected."},
+    {cat:'select', name:'Float Selection', keys:['Shift','Ctrl','L']},
+    {cat:'select', name:'Select by Color', keys:['Shift','O']},
+    {cat:'select', name:'Path to Selection', keys:['Shift','V'], note:'Converts the active path into a selection.'},
+    {cat:'select', name:'Toggle Quick Mask', keys:['Shift','Q'], note:'Paint a selection as a red overlay instead of marching ants.'},
+    {cat:'select', name:'Grow / Shrink / Border / Feather', noDefault:true, note:'Select menu — none of these ship with a default key; assign your own if you use them often.'},
+
+    // ---------------- View & Navigate ----------------
+    {cat:'view', name:'Toggle Fullscreen', keys:['F11']},
+    {cat:'view', name:'Toggle Docks', keys:['Tab']},
+    {cat:'view', name:'Show Menu (docks hidden)', keys:['F10']},
+    {cat:'view', name:'Fit Image in Window', keys:['Shift','Ctrl','J']},
+    {cat:'view', name:'Shrink Wrap Window', keys:['Ctrl','J'], note:'Resizes the image window to match the canvas at the current zoom.'},
+    {cat:'view', name:'Zoom In', keys:['+']},
+    {cat:'view', name:'Zoom Out', keys:['-']},
+    {cat:'view', name:'Zoom to 100%', keys:['1']},
+    {cat:'view', name:'Center Image in Window', keys:['Shift','J']},
+    {cat:'view', name:'Toggle Rulers', keys:['Shift','Ctrl','R']},
+    {cat:'view', name:'Toggle Guides', keys:['Shift','Ctrl','T']},
+    {cat:'view', name:'Pan Canvas', keys:['Space'], suffix:'+ drag', note:'Middle-mouse drag works too.'},
+    {cat:'view', name:'Zoom with Scroll Wheel', keys:['Ctrl'], suffix:'+ scroll'},
+    {cat:'view', name:'Scroll Horizontally', keys:['Shift'], suffix:'+ scroll'},
+
+    // ---------------- Image & Layer ----------------
+    {cat:'imagelayer', name:'Duplicate Image', keys:['Ctrl','D'], note:"Opens an exact copy in a new window. Doesn't deselect, unlike Photoshop's Ctrl+D."},
+    {cat:'imagelayer', name:'Flatten Image', noDefault:true, note:'Image → Flatten Image — merges all layers and removes transparency.'},
+    {cat:'imagelayer', name:'New Layer', keys:['Shift','Ctrl','N']},
+    {cat:'imagelayer', name:'Duplicate Layer', keys:['Shift','Ctrl','D']},
+    {cat:'imagelayer', name:'Select Layer Above', keys:['Page Up']},
+    {cat:'imagelayer', name:'Select Layer Below', keys:['Page Down']},
+    {cat:'imagelayer', name:'Select First Layer', keys:['Home']},
+    {cat:'imagelayer', name:'Select Last Layer', keys:['End']},
+    {cat:'imagelayer', name:'Merge Visible Layers', keys:['Ctrl','M']},
+    {cat:'imagelayer', name:'Anchor Layer', keys:['Ctrl','H'], note:'Anchors a floating selection onto the active layer.'},
+    {cat:'imagelayer', name:'Layer to Image Size', noDefault:true, note:'Layer menu — resizes the active layer to match the canvas.'},
+
+    // ---------------- Selection Tools ----------------
+    {cat:'seltools', name:'Rectangle Select', keys:['R']},
+    {cat:'seltools', name:'Ellipse Select', keys:['E']},
+    {cat:'seltools', name:'Free Select (Lasso)', keys:['F']},
+    {cat:'seltools', name:'Fuzzy Select (Magic Wand)', keys:['U']},
+    {cat:'seltools', name:'Select by Color', keys:['Shift','O']},
+    {cat:'seltools', name:'Scissors Select', keys:['I'], note:'Intelligent Scissors — click points along an edge and GIMP snaps to contrast.'},
+    {cat:'seltools', name:'Crop', keys:['Shift','C'], note:'Drag a rectangle, then Enter to apply or Esc to cancel.'},
+
+    // ---------------- Paint Tools ----------------
+    {cat:'painttools', name:'Bucket Fill', keys:['Shift','B']},
+    {cat:'painttools', name:'Gradient', keys:['G']},
+    {cat:'painttools', name:'Pencil', keys:['N'], note:'Hard-edged freehand strokes, no anti-aliasing.'},
+    {cat:'painttools', name:'Paintbrush', keys:['P']},
+    {cat:'painttools', name:'Eraser', keys:['Shift','E']},
+    {cat:'painttools', name:'Airbrush', keys:['A']},
+    {cat:'painttools', name:'Ink', keys:['K'], note:'Calligraphy-style, variable-width strokes.'},
+    {cat:'painttools', name:'MyPaint Brush', keys:['Y']},
+    {cat:'painttools', name:'Clone', keys:['C'], note:'Ctrl+click to set the source point first.'},
+    {cat:'painttools', name:'Heal', keys:['H'], note:'Like Clone, but blends texture and tone into the destination.'},
+    {cat:'painttools', name:'Dodge / Burn', keys:['Shift','D']},
+    {cat:'painttools', name:'Blur / Sharpen', keys:['Shift','U']},
+    {cat:'painttools', name:'Smudge', keys:['S']},
+
+    // ---------------- Transform Tools ----------------
+    {cat:'transformtools', name:'Move', keys:['M']},
+    {cat:'transformtools', name:'Align', keys:['Q']},
+    {cat:'transformtools', name:'Unified Transform', keys:['Shift','T'], note:'Scale, rotate and shear together in a single drag.'},
+    {cat:'transformtools', name:'Rotate', keys:['Shift','R']},
+    {cat:'transformtools', name:'Scale', keys:['Shift','S']},
+    {cat:'transformtools', name:'Shear', keys:['Shift','H']},
+    {cat:'transformtools', name:'Perspective', keys:['Shift','P']},
+    {cat:'transformtools', name:'Flip', keys:['Shift','F']},
+    {cat:'transformtools', name:'Cage Transform', keys:['Shift','G'], note:'Warp part of an image inside a cage outline.'},
+    {cat:'transformtools', name:'Handle Transform', keys:['Shift','L'], note:'Transform by placing and dragging up to four handles.'},
+    {cat:'transformtools', name:'3D Transform', keys:['Shift','W'], note:'Rotate a layer in simulated 3D space.'},
+
+    // ---------------- Other Tools ----------------
+    {cat:'othertools', name:'Paths', keys:['B'], note:'Draw and edit Bezier paths.'},
+    {cat:'othertools', name:'Text', keys:['T']},
+    {cat:'othertools', name:'Color Picker', keys:['O']},
+    {cat:'othertools', name:'Measure', keys:['Shift','M'], note:'Distance and angle between two points.'},
+    {cat:'othertools', name:'Zoom', keys:['Z']},
+    {cat:'othertools', name:'Raise Toolbox', keys:['Ctrl','B']},
+    {cat:'othertools', name:'Default Colors (black / white)', keys:['D']},
+    {cat:'othertools', name:'Swap FG / BG Colors', keys:['X']},
+
+    // ---------------- Canvas & Selection Modifiers ----------------
+    {cat:'modifiers', name:'Add to Selection', keys:['Shift'], suffix:'+ drag', note:'Works with any selection tool.'},
+    {cat:'modifiers', name:'Subtract from Selection', keys:['Ctrl'], suffix:'+ drag'},
+    {cat:'modifiers', name:'Intersect Selection', keys:['Shift','Ctrl'], suffix:'+ drag'},
+    {cat:'modifiers', name:'Constrain to Straight Line', keys:['Shift'], note:'While painting: click once, then Shift-click the end point for a straight line.'},
+    {cat:'modifiers', name:'Pick Color While Painting', keys:['Ctrl'], note:'Hold while a paint tool is active to temporarily switch to the color picker.'},
+    {cat:'modifiers', name:'Decrease Brush Size', keys:['[']},
+    {cat:'modifiers', name:'Increase Brush Size', keys:[']']},
+
+    // ---------------- Colors ----------------
+    {cat:'colors', name:'Levels', noDefault:true, note:'Colors → Levels — no default shortcut.'},
+    {cat:'colors', name:'Curves', noDefault:true, note:'Colors → Curves — no default shortcut.'},
+    {cat:'colors', name:'Brightness-Contrast', noDefault:true},
+    {cat:'colors', name:'Hue-Saturation', noDefault:true},
+    {cat:'colors', name:'Color Balance', noDefault:true},
+    {cat:'colors', name:'Desaturate', noDefault:true},
+    {cat:'colors', name:'Posterize', noDefault:true},
+    {cat:'colors', name:'Threshold', noDefault:true},
+    {cat:'colors', name:'Invert (colors)', noDefault:true, note:"Colors → Invert flips pixel colors — different from Select → Invert Selection (Ctrl+I)."},
+
+    // ---------------- Filters ----------------
+    {cat:'filters', name:'Repeat Last Filter', keys:['Ctrl','F'], note:'Re-applies the last filter with the same settings, no dialog.'},
+    {cat:'filters', name:'Reshow Last Filter', keys:['Shift','Ctrl','F'], note:"Re-opens the last filter's dialog so you can change settings."},
+    {cat:'filters', name:'Script-Fu Console', noDefault:true, note:'Filters → Script-Fu → Console — a Scheme REPL for scripting GIMP.'},
+
+    // ---------------- Text Tool ----------------
+    {cat:'text', name:'Select All Text in Box', keys:['Ctrl','A'], note:'While actively editing on-canvas text.'},
+    {cat:'text', name:'Move Cursor', keys:['Home'], suffix:'/ End / arrows', note:'Standard text-navigation keys work inside the text box.'},
+    {cat:'text', name:'Extend Selection', keys:['Shift'], suffix:'+ arrows'},
+    {cat:'text', name:'Commit and Exit Editing', keys:['Esc']},
+
+    // ---------------- Windows & Help ----------------
+    {cat:'winhelp', name:'Toggle Single-Window Mode', noDefault:true, note:'Windows → Single-Window Mode.'},
+    {cat:'winhelp', name:'Help', keys:['F1']},
+    {cat:'winhelp', name:'Context Help', keys:['Shift','F1'], note:"Opens help for whatever's under the cursor."}
+  ];
+
+  // GIMP vs Photoshop comparison (rendered as a table, not keycap rows)
+  var CMP = [
+    ['Deselect / Select None', 'Shift+Ctrl+A', 'Ctrl+D'],
+    ['Duplicate Image', 'Ctrl+D', 'Image → Duplicate (no default)'],
+    ['Duplicate Layer', 'Shift+Ctrl+D', 'Ctrl+J'],
+    ['Free / Unified Transform', 'Shift+T', 'Ctrl+T'],
+    ['Merge Visible Layers', 'Ctrl+M', 'Shift+Ctrl+E'],
+    ['Move tool', 'M', 'V'],
+    ['Eraser tool', 'Shift+E', 'E'],
+    ['Rectangle / Marquee Select', 'R', 'M'],
+    ['Free / Lasso Select', 'F', 'L'],
+    ['Bucket Fill', 'Shift+B', 'G'],
+    ['Color Picker / Eyedropper', 'O', 'I'],
+    ['Crop tool', 'Shift+C', 'C'],
+    ['Clone tool', 'C', 'S'],
+    ['Brush tool', 'P', 'B']
+  ];
+
+  // ---------- Rendering ----------
+  var sidebar = document.getElementById('sidebar');
+  var catContainer = document.getElementById('catContainer');
+  var macMode = false;
+
+  function keyLabel(tok){
+    if (macMode){
+      if (tok === 'Ctrl') return 'Cmd';
+      if (tok === 'Alt') return 'Option';
+    }
+    return tok;
+  }
+  function isMod(tok){
+    return ['Ctrl','Alt','Shift','Cmd','Option'].indexOf(tok) !== -1;
+  }
+  function searchTokens(e){
+    var parts = [e.name, e.note || '', ''];
+    (e.keys || []).forEach(function(t){
+      parts.push(t.toLowerCase());
+      if (t === 'Ctrl') parts.push('cmd command');
+      if (t === 'Alt') parts.push('option opt');
+    });
+    if (e.suffix) parts.push(e.suffix.toLowerCase());
+    return parts.join(' ').toLowerCase();
+  }
+
+  function renderKeys(e){
+    if (e.noDefault){
+      return '<span class="no-default">no default</span>';
+    }
+    var html = '<div class="keys">';
+    (e.keys || []).forEach(function(tok, i){
+      if (i > 0) html += '<span class="plus">+</span>';
+      var label = keyLabel(tok);
+      var cls = isMod(tok) || isMod(label) ? 'key mod' : 'key';
+      html += '<span class="' + cls + '">' + escapeHtml(label) + '</span>';
+    });
+    html += '</div>';
+    if (e.suffix){
+      html = html.replace('</div>', '</div>') + '<span class="suffix">' + escapeHtml(e.suffix) + '</span>';
+    }
+    return '<div style="display:flex;align-items:center;gap:.3rem;">' + html + '</div>';
+  }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+
+  function buildAll(){
+    sidebar.innerHTML = '';
+    catContainer.innerHTML = '';
+
+    CATS.forEach(function(cat){
+      var items = E.filter(function(e){ return e.cat === cat.id; });
+      var hasContent = items.length > 0 || cat.id === 'vsps';
+      if (!hasContent) return;
+
+      // sidebar link
+      var a = document.createElement('a');
+      a.href = '#' + cat.id;
+      var count = cat.id === 'vsps' ? CMP.length : items.length;
+      a.innerHTML = cat.label + '<span class="n">' + count + '</span>';
+      sidebar.appendChild(a);
+
+      // card
+      var card = document.createElement('section');
+      card.className = 'cat-card' + (cat.accent ? ' accent' : '');
+      card.id = cat.id;
+
+      var head = document.createElement('div');
+      head.className = 'cat-head';
+      head.innerHTML = '<h2>' + cat.label + '</h2><span class="cat-count">' + count + '</span>';
+      card.appendChild(head);
+
+      if (cat.id === 'vsps'){
+        var table = document.createElement('table');
+        table.className = 'cmp';
+        var thead = '<thead><tr><th>Action</th><th>GIMP</th><th>Photoshop</th></tr></thead>';
+        var rows = CMP.map(function(row){
+          var search = row.join(' ').toLowerCase();
+          return '<tr class="trow" data-search="' + escapeHtml(search) + '">' +
+                 '<td class="action-cell">' + escapeHtml(row[0]) + '</td>' +
+                 '<td>' + escapeHtml(row[1]) + '</td>' +
+                 '<td>' + escapeHtml(row[2]) + '</td></tr>';
+        }).join('');
+        table.innerHTML = thead + '<tbody>' + rows + '</tbody>';
+        card.appendChild(table);
+      } else {
+        items.forEach(function(e){
+          var row = document.createElement('div');
+          row.className = 'shortcut srow';
+          row.setAttribute('data-search', searchTokens(e));
+          var noteHtml = e.note ? '<div class="note">' + escapeHtml(e.note) + '</div>' : '';
+          row.innerHTML =
+            '<div class="action"><div class="name">' + escapeHtml(e.name) + '</div>' + noteHtml + '</div>' +
+            renderKeys(e);
+          card.appendChild(row);
+        });
+      }
+
+      catContainer.appendChild(card);
+    });
+  }
+
+  function rerenderKeycaps(){
+    // Re-render just the key labels/classes without rebuilding rows (search state preserved)
+    document.querySelectorAll('.srow').forEach(function(row, idx){});
+    buildAll();
+    applyFilter(document.getElementById('search').value);
+    highlightActiveNav();
+  }
+
+  // ---------- OS toggle ----------
+  var btnWin = document.getElementById('btnWin');
+  var btnMac = document.getElementById('btnMac');
+  btnWin.addEventListener('click', function(){
+    macMode = false; btnWin.classList.add('active'); btnMac.classList.remove('active');
+    rerenderKeycaps();
+  });
+  btnMac.addEventListener('click', function(){
+    macMode = true; btnMac.classList.add('active'); btnWin.classList.remove('active');
+    rerenderKeycaps();
+  });
+
+  // ---------- Search ----------
+  var searchInput = document.getElementById('search');
+  var resultCount = document.getElementById('resultCount');
+  var emptyState = document.getElementById('emptyState');
+
+  function highlightMatches(el, query){
+    var nameEl = el.querySelector('.name') || el.querySelector('.action-cell');
+    if (!nameEl) return;
+    var raw = nameEl.getAttribute('data-raw') || nameEl.textContent;
+    nameEl.setAttribute('data-raw', raw);
+    if (!query){
+      nameEl.textContent = raw;
+      return;
+    }
+    var idx = raw.toLowerCase().indexOf(query.toLowerCase());
+    if (idx === -1){
+      nameEl.textContent = raw;
+      return;
+    }
+    var before = escapeHtml(raw.slice(0, idx));
+    var match = escapeHtml(raw.slice(idx, idx + query.length));
+    var after = escapeHtml(raw.slice(idx + query.length));
+    nameEl.innerHTML = before + '<mark>' + match + '</mark>' + after;
+  }
+
+  function applyFilter(query){
+    query = (query || '').trim().toLowerCase();
+    var visibleTotal = 0;
+    document.querySelectorAll('.cat-card').forEach(function(card){
+      var rows = card.querySelectorAll('.srow, .trow');
+      var visibleInCard = 0;
+      rows.forEach(function(row){
+        var hay = row.getAttribute('data-search') || '';
+        var match = !query || hay.indexOf(query) !== -1;
+        row.style.display = match ? '' : 'none';
+        if (match){
+          visibleInCard++;
+          visibleTotal++;
+          highlightMatches(row, query);
+        }
+      });
+      card.style.display = visibleInCard > 0 ? '' : 'none';
+    });
+    if (query){
+      resultCount.textContent = visibleTotal + ' match' + (visibleTotal === 1 ? '' : 'es');
+    } else {
+      resultCount.textContent = '';
+    }
+    emptyState.classList.toggle('show', query.length > 0 && visibleTotal === 0);
+  }
+
+  searchInput.addEventListener('input', function(){
+    applyFilter(searchInput.value);
+  });
+
+  document.addEventListener('keydown', function(e){
+    var tag = (document.activeElement && document.activeElement.tagName) || '';
+    if (e.key === '/' && tag !== 'INPUT' && tag !== 'TEXTAREA'){
+      e.preventDefault();
+      searchInput.focus();
+    }
+    if (e.key === 'Escape' && document.activeElement === searchInput){
+      searchInput.value = '';
+      applyFilter('');
+      searchInput.blur();
+    }
+  });
+
+  // ---------- Scrollspy ----------
+  function highlightActiveNav(){
+    var links = Array.prototype.slice.call(sidebar.querySelectorAll('a'));
+    var sections = links.map(function(l){ return document.getElementById(l.getAttribute('href').slice(1)); });
+
+    function onScroll(){
+      var pos = window.scrollY + 120;
+      var current = sections[0];
+      sections.forEach(function(sec){
+        if (sec && sec.offsetTop <= pos) current = sec;
+      });
+      links.forEach(function(l){ l.classList.remove('active'); });
+      if (current){
+        var activeLink = sidebar.querySelector('a[href="#' + current.id + '"]');
+        if (activeLink) activeLink.classList.add('active');
+      }
+      var toTop = document.getElementById('toTop');
+      toTop.classList.toggle('show', window.scrollY > 500);
+    }
+    window.removeEventListener('scroll', window.__gimpScrollHandler || function(){});
+    window.__gimpScrollHandler = onScroll;
+    window.addEventListener('scroll', onScroll, {passive:true});
+    onScroll();
+  }
+
+  document.getElementById('toTop').addEventListener('click', function(){
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  // ---------- Init ----------
+  buildAll();
+  highlightActiveNav();
+})();
+</script>
+</body>
+</html>
